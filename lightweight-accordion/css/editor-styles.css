@@ -1,0 +1,24 @@
+.wp-admin .lightweight-accordion .lightweight-accordion-body {
+	padding: 0;
+}
+.wp-admin .lightweight-accordion .lightweight-accordion-title {
+	display: block;
+	background: #f1f2f6;
+	padding: 10px 12px 10px 18px;
+	margin-bottom: 0;
+}
+.wp-admin .lightweight-accordion .lightweight-accordion-title:before {
+	content: "\25BC ";
+	margin-right: 0.4em;
+}
+.wp-admin .lightweight-accordion .lightweight-accordion-body {
+	padding: 10px;
+	border: 2px dashed #f1f2f6;
+	border-top: 0;
+}
+.wp-admin .lightweight-accordion.bordered .lightweight-accordion-body {
+	border-style: solid;
+}
+.block-editor-block-list__block.is-selected:not(.has-child-selected) > .lightweight-accordion .block-editor-default-block-appender {
+	display: block;
+}
