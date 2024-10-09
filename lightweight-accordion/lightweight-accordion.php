@@ -3,7 +3,7 @@
 	 * Plugin Name: Lightweight Accordion
 	 * Plugin URI: https://smartwp.co/lightweight-accordion
 	 * Description: Extremely simple accordion for adding collapse elements to pages without affecting page load time. Works for Classic Editor via shortcode and Gutenberg via Block.
-	 * Version: 1.5.19
+	 * Version: 1.5.20
 	 * Text Domain: lightweight-accordion
 	 * Author: Andy Feliciotti
 	 * Author URI: https://smartwp.com
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'LIGHTWEIGHT_ACCORDION_VERSION', '1.5.19' );
+define( 'LIGHTWEIGHT_ACCORDION_VERSION', '1.5.20' );
 define( 'LIGHTWEIGHT_ACCORDION_CSS_VERSION', '1.3.3' );
 
 // Enqueue CSS when in use

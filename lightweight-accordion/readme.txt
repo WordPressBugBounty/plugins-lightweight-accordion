@@ -3,9 +3,9 @@ Contributors: someguy9
 Donate link: https://www.buymeacoffee.com/someguy
 Tags: accordion, collapsible, performance, block, blocks
 Requires at least: 5.0
-Tested up to: 6.5
+Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 1.5.19
+Stable tag: 1.5.20
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 
@@ -98,6 +98,9 @@ To install this plugin:
 2. Accordion options when using the Gutenberg block.
 
 == Changelog ==
+
+= 1.5.20 =
+ * Tested up to WordPress 6.7.
 
 = 1.5.19 =
  * Restore content display system to 1.5.16's version.
