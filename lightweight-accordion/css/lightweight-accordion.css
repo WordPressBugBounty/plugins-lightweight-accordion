@@ -17,7 +17,7 @@
 .lightweight-accordion details[open] summary ~ * {
 	animation: lwopen .5s ease-in-out;
 }
-.lightweight-accordion .lightweight-accordion-title p, .lightweight-accordion .lightweight-accordion-title span, .lightweight-accordion .lightweight-accordion-title h1, .lightweight-accordion .lightweight-accordion-title h2, .lightweight-accordion .lightweight-accordion-title h3 {
+.lightweight-accordion .lightweight-accordion-title p, .lightweight-accordion .lightweight-accordion-title span, .lightweight-accordion .lightweight-accordion-title h1, .lightweight-accordion .lightweight-accordion-title h2, .lightweight-accordion .lightweight-accordion-title h3, .lightweight-accordion .lightweight-accordion-title h4, .lightweight-accordion .lightweight-accordion-title h5, .lightweight-accordion .lightweight-accordion-title h6 {
 	display: inline;
 	font-size: 18px;
 	font-family: inherit;

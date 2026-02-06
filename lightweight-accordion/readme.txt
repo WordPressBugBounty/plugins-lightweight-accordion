@@ -3,9 +3,9 @@ Contributors: someguy9
 Donate link: https://www.buymeacoffee.com/someguy
 Tags: accordion, collapsible, performance, block, blocks
 Requires at least: 5.0
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 7.0
-Stable tag: 1.5.20
+Stable tag: 1.6.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 
@@ -19,7 +19,7 @@ Simple accordion for adding collapse elements to pages without affecting page lo
 
 **Extremely Lightweight (<1kb):** Without using Javascript the plugin uses the native details HTML tag and a few lines of code for almost no impact on front-end.
 
-**Customizable:** Options include customizing the HTML tag used for the accordion title, open by default, orders, and colors.
+**Customizable:** Options include customizing the HTML tag used for the accordion title, open by default, borders, colors, and accordion grouping (auto-close others when one opens).
 
 = Shortcode Usage examples =
 
@@ -43,6 +43,12 @@ If you'd like put a border around the content of the accordion you can use the "
 
 `[lightweight-accordion title="Bordered Content" bordered=true]My Content[/lightweight-accordion]`
 
+If you want accordions to auto-close when another opens (exclusive accordion), use the "group" attribute with the same value on each accordion.
+
+`[lightweight-accordion title="Question 1" group="faq"]Answer 1[/lightweight-accordion]`
+`[lightweight-accordion title="Question 2" group="faq"]Answer 2[/lightweight-accordion]`
+`[lightweight-accordion title="Question 3" group="faq"]Answer 3[/lightweight-accordion]`
+
 = Shortcode Options =
 
 Here is the full listing of shortcode options. Additionally all of these options are accessible when using the Gutenberg block.
@@ -58,6 +64,7 @@ Here is the full listing of shortcode options. Additionally all of these options
 * **class** (Default: false) Used to add a custom class to the parent container of the accordion.
 * **anchor** (Default: null) Adds the value as an ID to the accordion div as an anchor.
 * **autop** (Default: true) By default the shortcode will wrap text in a 'p' tag. Set this to false if you'd like this disabled for the specific accordion.
+* **group** (Default: false) Set this to a group name to make accordions with the same group auto-close when another opens. Uses the native HTML details name attribute for zero JavaScript overhead.
 
 = Additional Details =
 
@@ -98,6 +105,15 @@ To install this plugin:
 2. Accordion options when using the Gutenberg block.
 
 == Changelog ==
+
+= 1.6.0 =
+ * New feature: Accordion grouping - only one accordion can be open at a time within a group.
+ * Added "Add Item" button in block toolbar to easily create grouped accordions.
+ * Added `group` attribute for shortcodes to enable exclusive accordion behavior.
+ * Added H5 and H6 title tag options.
+ * Fixed deprecated `wp-editor` script dependency.
+ * Security improvements for class and title tag sanitization.
+ * Code improvements and bug fixes.
 
 = 1.5.20 =
  * Tested up to WordPress 6.7.

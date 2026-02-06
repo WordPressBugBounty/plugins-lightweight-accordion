@@ -1,9 +1,9 @@
 <?php
 /**
 	 * Plugin Name: Lightweight Accordion
-	 * Plugin URI: https://smartwp.co/lightweight-accordion
+	 * Plugin URI: https://smartwp.com/lightweight-accordion
 	 * Description: Extremely simple accordion for adding collapse elements to pages without affecting page load time. Works for Classic Editor via shortcode and Gutenberg via Block.
-	 * Version: 1.5.20
+	 * Version: 1.6.0
 	 * Text Domain: lightweight-accordion
 	 * Author: Andy Feliciotti
 	 * Author URI: https://smartwp.com
@@ -13,8 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'LIGHTWEIGHT_ACCORDION_VERSION', '1.5.20' );
-define( 'LIGHTWEIGHT_ACCORDION_CSS_VERSION', '1.3.3' );
+define( 'LIGHTWEIGHT_ACCORDION_VERSION', '1.6.0' );
+define( 'LIGHTWEIGHT_ACCORDION_CSS_VERSION', '1.6.0' );
 
 // Enqueue CSS when in use
 add_filter( 'the_content', 'enqueue_lightweight_accordion_styles' );
@@ -27,7 +27,7 @@ function enqueue_lightweight_accordion_styles($content = ""){
 
 	$plugin_url = plugin_dir_url( __FILE__ );
 
-	if( $include_frontend_stylesheet && ( $always_include_frontend_stylesheet || ( isset($post->post_content) && has_shortcode( $post->post_content, 'lightweight-accordion') || has_block('lightweight-accordion/lightweight-accordion') ) ) ){
+	if( $include_frontend_stylesheet && ( $always_include_frontend_stylesheet || ( isset($post->post_content) && has_shortcode( $post->post_content, 'lightweight-accordion') || has_block('lightweight-accordion/lightweight-accordion') || has_block('lightweight-accordion/accordion-group') ) ) ){
 		wp_enqueue_style('lightweight-accordion', $plugin_url . 'css/min/lightweight-accordion.min.css', array(), LIGHTWEIGHT_ACCORDION_CSS_VERSION);
 	}
 
@@ -50,7 +50,8 @@ function lightweight_accordion_shortcode( $atts, $content = null ) {
 		'title_text_color' => false,
 		'schema' => false,
 		'class' => false,
-		'autop' => true
+		'autop' => true,
+		'group' => false
 	), $atts, 'lightweight-accordion' );
 
 	return render_lightweight_accordion( $atts, $content, false );
@@ -59,56 +60,91 @@ add_shortcode('lightweight-accordion', 'lightweight_accordion_shortcode');
 add_shortcode('lightweight-accordion-nested', 'lightweight_accordion_shortcode');
 
 // Block handler for Gutenberg
-function lightweight_accordion_block_handler( $atts, $content ) {
+function lightweight_accordion_block_handler( $atts, $content, $block = null ) {
+	// Check if we're inside an accordion group and get the group name from context
+	if ( $block && isset( $block->context['lightweight-accordion/groupName'] ) ) {
+		$atts['group'] = $block->context['lightweight-accordion/groupName'];
+	}
 	return render_lightweight_accordion( $atts, $content, true );
+}
+
+// Accordion Group block handler - just renders inner content
+function lightweight_accordion_group_block_handler( $atts, $content ) {
+	return $content;
 }
 
 // Render the actual accordion
 function render_lightweight_accordion( $options, $content, $isBlock ) {
 	$output = '';
 
-	$process_shortcodes = apply_filters( 'lightweight_accordion_process_shortcodes', true);
+	// Merge with defaults to prevent undefined key warnings
+	$defaults = array(
+		'anchor'                 => null,
+		'title'                  => null,
+		'title_tag'              => 'span',
+		'accordion_open'         => false,
+		'bordered'               => false,
+		'title_background_color' => false,
+		'title_text_color'       => false,
+		'schema'                 => false,
+		'class'                  => false,
+		'className'              => false,
+		'autop'                  => true,
+		'group'                  => false,
+	);
+	$options = wp_parse_args( $options, $defaults );
 
-	if($process_shortcodes){
-		$content = do_shortcode($content);
+	$process_shortcodes = apply_filters( 'lightweight_accordion_process_shortcodes', true );
+
+	if ( $process_shortcodes ) {
+		$content = do_shortcode( $content );
 	}
 
-	if(!$isBlock && filter_var($options['autop'], FILTER_VALIDATE_BOOLEAN)){
-		$content = wpautop(preg_replace('#<p>\s*+(<br\s*/*>)?\s*</p>#i', '', force_balance_tags($content)));
+	if ( ! $isBlock && filter_var( $options['autop'], FILTER_VALIDATE_BOOLEAN ) ) {
+		$content = wpautop( preg_replace( '#<p>\s*+(<br\s*/*>)?\s*</p>#i', '', force_balance_tags( $content ) ) );
 	}
 
 	$anchor = '';
-	if(isset($options['anchor']) && $options['anchor']){
-		$anchor = ' id="'.esc_attr( $options['anchor'] ).'"';
+	if ( $options['anchor'] ) {
+		$anchor = ' id="' . esc_attr( $options['anchor'] ) . '"';
 	}
 
 	$open = '';
-	if($options['accordion_open']){
+	if ( $options['accordion_open'] ) {
 		$open = ' open';
 	}
 
-	$classes = array('lightweight-accordion');
-	if($options['bordered']){
+	$group = '';
+	if ( $options['group'] ) {
+		$group = ' name="' . esc_attr( $options['group'] ) . '"';
+	}
+
+	$classes = array( 'lightweight-accordion' );
+	if ( $options['bordered'] ) {
 		$classes[] = 'bordered';
 	}
-	if(isset($options['class']) && $options['class']){
-		$classes[] = $options['class'];
+	if ( $options['class'] ) {
+		// Sanitize each custom class name
+		$custom_classes = array_map( 'sanitize_html_class', explode( ' ', $options['class'] ) );
+		$classes = array_merge( $classes, array_filter( $custom_classes ) );
 	}
-	if(isset($options['className']) && $options['className']){
-		$classes[] = $options['className'];
+	if ( $options['className'] ) {
+		// Sanitize each custom class name (Gutenberg className)
+		$custom_classes = array_map( 'sanitize_html_class', explode( ' ', $options['className'] ) );
+		$classes = array_merge( $classes, array_filter( $custom_classes ) );
 	}
 
-	$bodyClasses = array('lightweight-accordion-body');
+	$bodyClasses = array( 'lightweight-accordion-body' );
 
 	$titleStyles = $bodyStyles = array();
-	if($options['title_text_color']){
-		$titleStyles[] = 'color:'.esc_attr( $options['title_text_color'] );
-		$classes[] = 'has-text-color';
+	if ( $options['title_text_color'] ) {
+		$titleStyles[] = 'color:' . esc_attr( $options['title_text_color'] );
+		$classes[]     = 'has-text-color';
 	}
-	if($options['title_background_color']){
-		$titleStyles[] = 'background:'.esc_attr( $options['title_background_color'] );
-		$bodyStyles[] = 'border-color:'.esc_attr( $options['title_background_color'] );
-		$classes[] = 'has-background';
+	if ( $options['title_background_color'] ) {
+		$titleStyles[] = 'background:' . esc_attr( $options['title_background_color'] );
+		$bodyStyles[]  = 'border-color:' . esc_attr( $options['title_background_color'] );
+		$classes[]     = 'has-background';
 	}
 	if(!empty($titleStyles)){
 		$titleStyles = ' style="'.implode(';',$titleStyles).';"';
@@ -131,12 +167,16 @@ function render_lightweight_accordion( $options, $content, $isBlock ) {
 				'mainEntity' => array()
 			);
 		}
+		// Strip HTML for JSON-LD schema (should be plain text)
+		$schema_title = wp_strip_all_tags( $options['title'] );
+		$schema_content = wp_strip_all_tags( $content );
+		
 		$lightweight_accordion_schema['mainEntity'][] = array(
 			'@type' => 'Question',
-			'name' => $options['title'],
+			'name' => $schema_title,
 			'acceptedAnswer' => array(
 				'@type' => 'Answer',
-				'text' => $content
+				'text' => $schema_content
 			)
 		);
 
@@ -151,10 +191,15 @@ function render_lightweight_accordion( $options, $content, $isBlock ) {
 	}
 
 	$title = isset( $options['title'] ) ? wp_kses_post( $options['title'] ) : '';
-	$title_tag = isset( $options['title_tag'] ) ? sanitize_html_class( $options['title_tag'] ) : 'h3';
+	
+	// Whitelist allowed title tags for security
+	$allowed_title_tags = array( 'span', 'div', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' );
+	$title_tag = isset( $options['title_tag'] ) && in_array( $options['title_tag'], $allowed_title_tags, true ) 
+		? $options['title_tag'] 
+		: 'span';
 
 	if( $title && isset($content) ){
-		$output .= '<div class="' . esc_attr( implode(' ', $classes) ) . '"' . $anchor . '><details' . $propBox . '' . $open . '><summary class="lightweight-accordion-title"' . $titleStyles . '><' . esc_attr( $title_tag ) . '' . $propTitle . '>' . $title . '</' . esc_attr( $title_tag ) . '></summary><div class="' . esc_attr( implode(' ', $bodyClasses) ) . '"' . $bodyStyles . '>';
+		$output .= '<div class="' . esc_attr( implode(' ', $classes) ) . '"' . $anchor . '><details' . $propBox . $group . $open . '><summary class="lightweight-accordion-title"' . $titleStyles . '><' . esc_attr( $title_tag ) . '' . $propTitle . '>' . $title . '</' . esc_attr( $title_tag ) . '></summary><div class="' . esc_attr( implode(' ', $bodyClasses) ) . '"' . $bodyStyles . '>';
 		$output .= $content;
 		$output .= '</div></details></div>';
 	}
@@ -176,63 +221,48 @@ function lightweight_accordion_output_schema() {
 }
 
 // Register Gutenberg block
-add_action('init', function () {
+add_action( 'init', 'lightweight_accordion_register_block' );
+function lightweight_accordion_register_block() {
 	// Skip block registration if Gutenberg is not enabled.
-	if (!function_exists('register_block_type')) {
+	if ( ! function_exists( 'register_block_type' ) ) {
 		return;
 	}
-	$dir = dirname(__FILE__);
+	$dir = dirname( __FILE__ );
 
 	$index_js = 'build/index.js';
 	wp_register_script(
 		'lightweight-accordion',
-		plugins_url($index_js, __FILE__),
+		plugins_url( $index_js, __FILE__ ),
 		array(
-			'wp-editor',
+			'wp-block-editor',
 			'wp-blocks',
 			'wp-i18n',
 			'wp-element',
-			'wp-components'
+			'wp-components',
+			'wp-data'
 		),
-		filemtime("$dir/$index_js")
+		filemtime( "$dir/$index_js" )
 	);
 
-	register_block_type('lightweight-accordion/lightweight-accordion', array(
-		'editor_script' => 'lightweight-accordion',
+	// Register the accordion group block
+	register_block_type( 'lightweight-accordion/accordion-group', array(
+		'editor_script'    => 'lightweight-accordion',
+		'render_callback'  => 'lightweight_accordion_group_block_handler',
+		'provides_context' => array(
+			'lightweight-accordion/groupName' => 'groupName',
+		),
+		'attributes'       => array(
+			'groupName' => array(
+				'type'    => 'string',
+				'default' => '',
+			),
+		),
+	) );
+
+	// Register the accordion block (works standalone or inside groups)
+	register_block_type( 'lightweight-accordion/lightweight-accordion', array(
+		'editor_script'   => 'lightweight-accordion',
 		'render_callback' => 'lightweight_accordion_block_handler',
-		'attributes' => [
-			'content' => [
-				'type'    => 'array',
-				'default' => 'Content'
-			],
-			'title' => [
-				'type'    => 'string',
-				'default' => 'Accordion Title'
-			],
-			'accordion_open' => [
-				'type'    => 'boolean',
-				'default' => false
-			],
-			'bordered' => [
-				'type'    => 'boolean',
-				'default' => false
-			],
-			'title_tag' => [
-				'type'    => 'string',
-				'default' => 'span'
-			],
-			'title_text_color' => [
-				'type'    => 'string',
-				'default' => false
-			],
-			'title_background_color' => [
-				'type'    => 'string',
-				'default' => false
-			],
-			'schema' => [
-				'type'    => 'string',
-				'default' => false
-			]
-		]
-	));
-});
+		'uses_context'    => array( 'lightweight-accordion/groupName' ),
+	) );
+}

@@ -1,6 +1,3 @@
-.wp-admin .lightweight-accordion .lightweight-accordion-body {
-	padding: 0;
-}
 .wp-admin .lightweight-accordion .lightweight-accordion-title {
 	display: block;
 	background: #f1f2f6;
@@ -21,4 +18,10 @@
 }
 .block-editor-block-list__block.is-selected:not(.has-child-selected) > .lightweight-accordion .block-editor-default-block-appender {
 	display: block;
+}
+
+/* Accordion Group Block Styles */
+.wp-admin .lightweight-accordion-group {
+	border-left: 3px solid #007cba;
+	padding-left: 12px;
 }
