@@ -2,10 +2,10 @@
 Contributors: someguy9
 Donate link: https://www.buymeacoffee.com/someguy
 Tags: accordion, collapsible, performance, block, blocks
-Requires at least: 5.0
-Tested up to: 6.9
+Requires at least: 5.9
+Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 1.6.0
+Stable tag: 1.7.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 
@@ -49,6 +49,10 @@ If you want accordions to auto-close when another opens (exclusive accordion), u
 `[lightweight-accordion title="Question 2" group="faq"]Answer 2[/lightweight-accordion]`
 `[lightweight-accordion title="Question 3" group="faq"]Answer 3[/lightweight-accordion]`
 
+If you'd like to swap the default triangle marker for a chevron or plus/minus icon (optionally on the right side of the title) use the "icon" and "icon_position" attributes.
+
+`[lightweight-accordion title="My Accordion" icon="chevron" icon_position="right"]My Content[/lightweight-accordion]`
+
 = Shortcode Options =
 
 Here is the full listing of shortcode options. Additionally all of these options are accessible when using the Gutenberg block.
@@ -65,6 +69,8 @@ Here is the full listing of shortcode options. Additionally all of these options
 * **anchor** (Default: null) Adds the value as an ID to the accordion div as an anchor.
 * **autop** (Default: true) By default the shortcode will wrap text in a 'p' tag. Set this to false if you'd like this disabled for the specific accordion.
 * **group** (Default: false) Set this to a group name to make accordions with the same group auto-close when another opens. Uses the native HTML details name attribute for zero JavaScript overhead.
+* **icon** (Default: false) Set this to "chevron", "plus", or "none" to replace the default triangle marker. The chevron rotates and the plus becomes a minus when the accordion opens.
+* **icon_position** (Default: false) Set this to "right" to display the chevron or plus icon on the right side of the accordion title.
 
 = Additional Details =
 
@@ -88,6 +94,10 @@ If you'd like to force "lightweight-accordion.css" to load on all of your site y
 
 `add_filter('lightweight_accordion_always_include_frontend_stylesheet', '__return_true' );`
 
+When a page contains an accordion a tiny inline script is added to the footer that automatically opens accordions targeted by a URL hash (for example a link to an accordion's anchor). If you'd like to disable this you can use the filter below.
+
+`add_filter('lightweight_accordion_anchor_script', '__return_false' );`
+
 == Installation ==
 
 To install this plugin:
@@ -105,6 +115,17 @@ To install this plugin:
 2. Accordion options when using the Gutenberg block.
 
 == Changelog ==
+
+= 1.7.0 =
+ * Smooth open/close animation using modern CSS (zero JavaScript, progressive enhancement in supporting browsers, respects reduced motion preference).
+ * Native block support panels on the accordion block: spacing (margin & padding), typography (font size & line height), and border (radius, color, width).
+ * WordPress 7.0 compatibility: blocks upgraded to Block API version 3 for the iframed editor, with editor styles now loading inside the editor canvas.
+ * Deleting the last accordion in a group now removes the empty group instead of leaving a leftover box in the editor.
+ * Removed a deprecated block attribute (`source: children`) flagged by the WordPress plugin checker.
+ * Minimum required WordPress version is now 5.9 (the block editor integration uses APIs introduced there).
+ * Tested up to WordPress 7.0.
+ * New icon options: chevron, plus/minus, or none, with optional right alignment. Available in the block settings and via the `icon` and `icon_position` shortcode attributes.
+ * Accordions now automatically open when targeted by a URL hash, so anchor deep links no longer land on a closed accordion. Disable with the `lightweight_accordion_anchor_script` filter.
 
 = 1.6.0 =
  * New feature: Accordion grouping - only one accordion can be open at a time within a group.

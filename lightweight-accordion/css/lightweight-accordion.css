@@ -27,3 +27,83 @@
 	0%    {opacity: 0;}
 	100%  {opacity: 1;}
 }
+/* Smooth open/close animation, applies in browsers supporting ::details-content */
+.lightweight-accordion details {
+	interpolate-size: allow-keywords;
+}
+.lightweight-accordion details::details-content {
+	height: 0;
+	overflow: clip;
+	transition: height 0.3s ease, content-visibility 0.3s allow-discrete;
+}
+.lightweight-accordion details[open]::details-content {
+	height: auto;
+}
+/* Icon styles */
+.lightweight-accordion.icon-chevron .lightweight-accordion-title,
+.lightweight-accordion.icon-plus .lightweight-accordion-title,
+.lightweight-accordion.icon-none .lightweight-accordion-title {
+	list-style: none;
+}
+.lightweight-accordion.icon-chevron .lightweight-accordion-title::-webkit-details-marker,
+.lightweight-accordion.icon-plus .lightweight-accordion-title::-webkit-details-marker,
+.lightweight-accordion.icon-none .lightweight-accordion-title::-webkit-details-marker {
+	display: none;
+}
+.lightweight-accordion.icon-chevron .lightweight-accordion-title::before {
+	content: "";
+	display: inline-block;
+	width: 0.4em;
+	height: 0.4em;
+	margin-right: 0.6em;
+	vertical-align: 0.1em;
+	border-right: 0.15em solid currentColor;
+	border-bottom: 0.15em solid currentColor;
+	transform: rotate(-45deg);
+	transition: transform 0.25s ease;
+}
+.lightweight-accordion.icon-chevron details[open] .lightweight-accordion-title::before {
+	transform: rotate(45deg);
+}
+.lightweight-accordion.icon-plus .lightweight-accordion-title::before {
+	content: "+";
+	display: inline-block;
+	width: 1em;
+	margin-right: 0.4em;
+	text-align: center;
+}
+.lightweight-accordion.icon-plus details[open] .lightweight-accordion-title::before {
+	content: "\2212";
+}
+.lightweight-accordion.icon-right .lightweight-accordion-title {
+	position: relative;
+	padding-right: 2.4em;
+}
+.lightweight-accordion.icon-right .lightweight-accordion-title::before {
+	position: absolute;
+	right: 1em;
+	top: 50%;
+	margin-right: 0;
+	transform: translateY(-50%);
+}
+.lightweight-accordion.icon-right.icon-chevron .lightweight-accordion-title::before {
+	transform: translateY(-50%) rotate(-45deg);
+}
+.lightweight-accordion.icon-right.icon-chevron details[open] .lightweight-accordion-title::before {
+	transform: translateY(-50%) rotate(45deg);
+}
+/* Let block support styles through: title font size is pinned to 18px unless a block font size is set */
+.lightweight-accordion[style*="font-size"] .lightweight-accordion-title :is(p, span, h1, h2, h3, h4, h5, h6),
+.lightweight-accordion[class*="-font-size"] .lightweight-accordion-title :is(p, span, h1, h2, h3, h4, h5, h6) {
+	font-size: inherit;
+}
+/* Keep the title background inside rounded corners when a border radius is set */
+.lightweight-accordion[style*="radius"] {
+	overflow: clip;
+}
+@media (prefers-reduced-motion: reduce) {
+	.lightweight-accordion details::details-content,
+	.lightweight-accordion .lightweight-accordion-title::before {
+		transition: none;
+	}
+}

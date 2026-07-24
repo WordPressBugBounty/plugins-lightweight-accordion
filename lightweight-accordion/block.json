@@ -1,4 +1,5 @@
 {
+	"apiVersion": 3,
 	"name": "lightweight-accordion/lightweight-accordion",
 	"title": "Lightweight Accordion",
 	"category": "widgets",
@@ -6,6 +7,12 @@
 	"description": "Simple lightweight accordion collapsible block.",
 	"keywords": [ "accordion", "collapsible", "toggle" ],
 	"textdomain": "lightweight-accordion",
+	"supports": {
+		"anchor": true,
+		"spacing": { "margin": true, "padding": true },
+		"typography": { "fontSize": true, "lineHeight": true },
+		"border": { "radius": true, "color": true, "width": true, "style": true }
+	},
 	"editorScript": "file:./build/index.js",
 	"editorStyle": "file:./css/min/editor-styles.min.css",
 	"style": "file:./css/min/lightweight-accordion.min.css"
